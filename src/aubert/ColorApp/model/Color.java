@@ -1,4 +1,4 @@
-package aubert.color.model;
+package aubert.ColorApp.model;
 
 public class Color {
     private int red;
