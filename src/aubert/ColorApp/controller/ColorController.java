@@ -8,11 +8,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import aubert.ColorApp.model.Color;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 
 public class ColorController implements Initializable {
 
-    private Color color;
+    private Color color=new Color(153,51,102);
+
     @FXML
     private TextField textFieldHexValue;
     @FXML
@@ -24,10 +24,28 @@ public class ColorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        textFieldHexValue.addEventHandler(KeyEvent.KEY_TYPED,(KeyEvent key) -> {
-            //color.setHexValue(key.getText());
-            //System.out.println(color.toString());
-            System.out.println("nouvelle valeur dans hexValue");
-        });
+        textFieldHexValue.textProperty().addListener(
+                ((observableValue, oldValue, newValue) -> {
+                    if (newValue.matches("#[A-F0-9]{6}")) {
+                        color.setHexValue(newValue);
+                        textFieldRedValue.setText(String.valueOf(color.getRed()));
+                        textFieldGreenValue.setText(String.valueOf(color.getGreen()));
+                        textFieldBlueValue.setText(String.valueOf(color.getBlue()));
+                        System.out.println("new value = " + color.getHexValue());
+                    }
+                })
+        );
+
+        textFieldRedValue.textProperty().addListener(
+                ((observableValue, oldValue, newValue) -> {
+                    int newRed = Integer.parseInt(newValue);
+                    if (newRed>=0 && newRed<=255){
+                        color.setRed(newRed);
+                        textFieldGreenValue.setText(String.valueOf(color.getGreen()));
+                        textFieldBlueValue.setText(String.valueOf(color.getBlue()));
+                        textFieldHexValue.setText(color.getHexValue());
+                    }
+                })
+        );
     }
 }
