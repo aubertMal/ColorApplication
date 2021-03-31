@@ -6,13 +6,13 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ResourceBundle;
 import aubert.ColorApp.model.Color;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 
 public class ColorController implements Initializable {
 
-    private Color color=new Color(153,51,102);
+    private Color color=new Color(255,255,255);
 
     @FXML
     private TextField textFieldHexValue;
@@ -23,37 +23,51 @@ public class ColorController implements Initializable {
     @FXML
     private TextField textFieldBlueValue;
     @FXML
-    private Slider redSlider = new Slider();
+    private Slider redSlider;
     @FXML
-    private Slider blueSlider = new Slider();
+    private Slider blueSlider;
     @FXML
-    private Slider greenSlider = new Slider();
+    private Slider greenSlider;
+    @FXML
+    private Pane paneColor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         textFieldHexValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("HEX", Integer.valueOf(newValue));
-                    System.out.println("new value = " + color.getHexValue());
+                    if(newValue.matches("#[A-F0-9]{6}")) //on va attendre la saisie du code hexa en entier avant de le traiter
+                        updateColorFromHex(newValue);
                 })
         );
 
         textFieldRedValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("RED",Integer.valueOf(newValue));
+                    try {
+                        updateOneColor("RED", Integer.valueOf(newValue));
+                    } catch (NumberFormatException e){
+                        System.out.println("Erreur au parsing de la chaine " + newValue);
+                    }
                 })
         );
 
         textFieldGreenValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("GREEN",Integer.valueOf(newValue));
+                    try {
+                        updateOneColor("GREEN", Integer.valueOf(newValue));
+                    } catch (NumberFormatException e){
+                        System.out.println("Erreur au parsing de la chaine " + newValue);
+                    }
                 })
         );
 
         textFieldBlueValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("BLUE",Integer.valueOf(newValue));
+                    try {
+                        updateOneColor("BLUE", Integer.valueOf(newValue));
+                    } catch (NumberFormatException e){
+                        System.out.println("Erreur au parsing de la chaine " + newValue);
+                    }
                 })
         );
 
@@ -65,42 +79,57 @@ public class ColorController implements Initializable {
 
         blueSlider.valueProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("BLUE",newValue.intValue());
+                    updateOneColor("BLUE", newValue.intValue());
                 })
         );
 
         greenSlider.valueProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("GREEN",newValue.intValue());
+                    updateOneColor("GREEN", newValue.intValue());
                 })
         );
+
     }
 
     private void updateAllColors(){
-        textFieldRedValue.setText(String.valueOf(color.getRed()));
-        textFieldGreenValue.setText(String.valueOf(color.getGreen()));
-        textFieldBlueValue.setText(String.valueOf(color.getBlue()));
-        textFieldHexValue.setText(color.getHexValue());
+        try {
+            textFieldRedValue.setText(String.valueOf(color.getRed()));
+            textFieldGreenValue.setText(String.valueOf(color.getGreen()));
+            textFieldBlueValue.setText(String.valueOf(color.getBlue()));
+            textFieldHexValue.setText(color.getHexValue());
+            redSlider.setValue(color.getRed());
+            blueSlider.setValue(color.getBlue());
+            greenSlider.setValue(color.getGreen());
+        } catch (IllegalArgumentException e){
+            System.out.println("Erreur à la mise à jour des couleurs");
+        }
+        paneColor.setStyle("-fx-background-color: " + color.getHexValue() + ";");
+    }
+
+    private void updateColorFromHex(String hexValue){
+        try {
+            color.setHexValue(hexValue);
+        } catch (IllegalArgumentException e){
+            System.out.println("en attente d'une valeur hexa correcte");
+        }
+        updateAllColors();
     }
 
     private void updateOneColor(String colorCode, int value){
-        switch (colorCode){
-            case "RED":
-                color.setRed(value);
-                redSlider.setValue(value);
-                break;
-            case "GREEN":
-                color.setGreen(value);
-                greenSlider.setValue(value);
-                break;
-            case "BLUE":
-                color.setBlue(value);
-                blueSlider.setValue(value);
-                break;
-            case "HEX":
-                color.setHexValue(color.getHexValue());
-                updateAllColors();
-                break;
+        try {
+            switch (colorCode) {
+                case "RED":
+                    color.setRed(value);
+                    break;
+                case "GREEN":
+                    color.setGreen(value);
+                    break;
+                case "BLUE":
+                    color.setBlue(value);
+                    break;
+            }
+        } catch (IllegalArgumentException e){
+            System.out.println("Le code couleur " + colorCode+ " n'est pas bon");
         }
         updateAllColors();
     }
