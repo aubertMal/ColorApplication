@@ -6,6 +6,8 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ResourceBundle;
 import aubert.ColorApp.model.Color;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 
 public class ColorController implements Initializable {
@@ -20,31 +22,56 @@ public class ColorController implements Initializable {
     private TextField textFieldGreenValue;
     @FXML
     private TextField textFieldBlueValue;
+    @FXML
+    private Slider redSlider = new Slider();
+    @FXML
+    private Slider blueSlider = new Slider();
+    @FXML
+    private Slider greenSlider = new Slider();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         textFieldHexValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("HEX", newValue);
+                    updateOneColor("HEX", Integer.valueOf(newValue));
                     System.out.println("new value = " + color.getHexValue());
                 })
         );
 
         textFieldRedValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("RED",newValue);
+                    updateOneColor("RED",Integer.valueOf(newValue));
                 })
         );
 
         textFieldGreenValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("GREEN",newValue);
+                    updateOneColor("GREEN",Integer.valueOf(newValue));
                 })
         );
 
         textFieldBlueValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    updateOneColor("BLUE",newValue);
+                    updateOneColor("BLUE",Integer.valueOf(newValue));
+                })
+        );
+
+        redSlider.valueProperty().addListener(
+                ((observableValue, oldValue, newValue) -> {
+                    updateOneColor("RED", newValue.intValue());
+                })
+        );
+
+        blueSlider.valueProperty().addListener(
+                ((observableValue, oldValue, newValue) -> {
+                    updateOneColor("BLUE",newValue.intValue());
+                })
+        );
+
+        greenSlider.valueProperty().addListener(
+                ((observableValue, oldValue, newValue) -> {
+                    updateOneColor("GREEN",newValue.intValue());
                 })
         );
     }
@@ -56,22 +83,22 @@ public class ColorController implements Initializable {
         textFieldHexValue.setText(color.getHexValue());
     }
 
-    private void updateOneColor(String colorCode, String value){
+    private void updateOneColor(String colorCode, int value){
         switch (colorCode){
             case "RED":
-                int newRed = Integer.parseInt(value);
-                color.setRed(newRed);
+                color.setRed(value);
+                redSlider.setValue(value);
                 break;
             case "GREEN":
-                int newGreen = Integer.parseInt(value);
-                color.setGreen(newGreen);
+                color.setGreen(value);
+                greenSlider.setValue(value);
                 break;
             case "BLUE":
-                int newBlue = Integer.parseInt(value);
-                color.setBlue(newBlue);
+                color.setBlue(value);
+                blueSlider.setValue(value);
                 break;
             case "HEX":
-                color.setHexValue(value);
+                color.setHexValue(color.getHexValue());
                 updateAllColors();
                 break;
         }
