@@ -1,6 +1,5 @@
 package aubert.ColorApp.controller;
 
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
@@ -26,26 +25,56 @@ public class ColorController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         textFieldHexValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    if (newValue.matches("#[A-F0-9]{6}")) {
-                        color.setHexValue(newValue);
-                        textFieldRedValue.setText(String.valueOf(color.getRed()));
-                        textFieldGreenValue.setText(String.valueOf(color.getGreen()));
-                        textFieldBlueValue.setText(String.valueOf(color.getBlue()));
-                        System.out.println("new value = " + color.getHexValue());
-                    }
+                    updateOneColor("HEX", newValue);
+                    System.out.println("new value = " + color.getHexValue());
                 })
         );
 
         textFieldRedValue.textProperty().addListener(
                 ((observableValue, oldValue, newValue) -> {
-                    int newRed = Integer.parseInt(newValue);
-                    if (newRed>=0 && newRed<=255){
-                        color.setRed(newRed);
-                        textFieldGreenValue.setText(String.valueOf(color.getGreen()));
-                        textFieldBlueValue.setText(String.valueOf(color.getBlue()));
-                        textFieldHexValue.setText(color.getHexValue());
-                    }
+                    updateOneColor("RED",newValue);
                 })
         );
+
+        textFieldGreenValue.textProperty().addListener(
+                ((observableValue, oldValue, newValue) -> {
+                    updateOneColor("GREEN",newValue);
+                })
+        );
+
+        textFieldBlueValue.textProperty().addListener(
+                ((observableValue, oldValue, newValue) -> {
+                    updateOneColor("BLUE",newValue);
+                })
+        );
+    }
+
+    private void updateAllColors(){
+        textFieldRedValue.setText(String.valueOf(color.getRed()));
+        textFieldGreenValue.setText(String.valueOf(color.getGreen()));
+        textFieldBlueValue.setText(String.valueOf(color.getBlue()));
+        textFieldHexValue.setText(color.getHexValue());
+    }
+
+    private void updateOneColor(String colorCode, String value){
+        switch (colorCode){
+            case "RED":
+                int newRed = Integer.parseInt(value);
+                color.setRed(newRed);
+                break;
+            case "GREEN":
+                int newGreen = Integer.parseInt(value);
+                color.setGreen(newGreen);
+                break;
+            case "BLUE":
+                int newBlue = Integer.parseInt(value);
+                color.setBlue(newBlue);
+                break;
+            case "HEX":
+                color.setHexValue(value);
+                updateAllColors();
+                break;
+        }
+        updateAllColors();
     }
 }
